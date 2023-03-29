@@ -1,5 +1,9 @@
-package u04lab.code
+package u04lab.code.exercises
+
 import List.*
+import u04lab.code.*
+
+import scala.collection.immutable.List.*
 
 trait Item {
   def code: Int
@@ -54,6 +58,18 @@ object Warehouse {
   def apply(): Warehouse = WarehouseImpl()
 }
 
+object SameTag:
+  private def checkAllEquals(l: List[Item], tagsCheck: List[String]): Boolean = length(filter(map(l)(_.tags))(x => x == tagsCheck)) == length(l)
+
+  def unapply(items: List[Item]): scala.Option[List[String]] = items match
+    case Cons(h, _) if checkAllEquals(items, h.tags) => scala.Option(h.tags)
+    case _ => scala.Option(List.empty)
+
+
+def someTag(l: List[Item]): String = l match
+  case SameTag(t) => "Same tag:" + t
+  case _ => "No same tag"
+
 case class WarehouseImpl() extends Warehouse:
   private var itemList: List[Item] = Nil()
   override def store(item: Item): Unit = itemList = Cons(item, itemList)
@@ -81,6 +97,9 @@ case class WarehouseImpl() extends Warehouse:
   println(warehouse.retrieve(dellXps.code)) // Some(dellXps)
   println(warehouse.remove(dellXps)) // side effect, remove dell xps from the warehouse
   println(warehouse.retrieve(dellXps.code)) // None
+
+  println(someTag(List(dellXps, dellInspiron))) // Same tag:List(notebook)
+  println(someTag(List(dellXps, xiaomiMoped))) // No same tag
 
 /** Hints:
  * - Implement the Item with a simple case class

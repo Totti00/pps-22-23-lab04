@@ -1,7 +1,7 @@
 package u04lab.code
 
 import scala.util.Random
-import List.*
+import u04lab.code.exercises.List.*
 
 enum Stream[A]:
   private case Empty()
@@ -16,9 +16,9 @@ object Stream:
     lazy val tail = tl
     Cons(() => head, () => tail)
 
-  def toList[A](stream: Stream[A]): List[A] = stream match
-    case Cons(h, t) => List.Cons(h(), toList(t()))
-    case _ => List.Nil()
+  def toList[A](stream: Stream[A]): exercises.List[A] = stream match
+    case Cons(h, t) => exercises.List.Cons(h(), toList(t()))
+    case _ => exercises.List.Nil()
 
   def map[A, B](stream: Stream[A])(f: A => B): Stream[B] = stream match
     case Cons(head, tail) => cons(f(head()), map(tail())(f))

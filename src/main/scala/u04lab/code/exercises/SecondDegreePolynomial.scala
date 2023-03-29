@@ -1,4 +1,4 @@
-package u04lab.code
+package u04lab.code.exercises
 
 // Express a second degree polynomial
 // Structure: secondDegree * X^2 + firstDegree * X + constant

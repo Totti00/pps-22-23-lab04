@@ -1,8 +1,9 @@
-package u04lab.code
+package u04lab.code.exercises
+
+import u04lab.code.Option.*
+import u04lab.code.*
 
 import scala.annotation.tailrec
-import u04lab.code.Option.*
-import u04lab.code.Option
 // A generic linkedlist
 enum List[E]:
   case Cons(head: E, tail: List[E])
@@ -10,6 +11,12 @@ enum List[E]:
 
 // a companion object (i.e., module) for List
 object List:
+
+  def apply[E](e: E*): List[E] =
+    var l: List[E] = Nil()
+    for elem <- e do l = append(l, Cons(elem, Nil()))
+    l
+
   def empty[E]: List[E] = Nil()
 
   def cons[E](h: E, t: List[E]): List[E] = Cons(h, t)
