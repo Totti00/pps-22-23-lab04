@@ -17,7 +17,7 @@ Particularly, it implements a clone of the game Minesweeper -
 ![final](https://user-images.githubusercontent.com/23448811/222984332-0f60a4c4-c825-4f89-8692-19acb74ad20e.png)
 
 A starting codebase is provided,
- that is a minimal GUI already set up to intercept and manage events ([`Main`](./Main.java) it is the entrypoint of the application).
+ that is a minimal GUI already set up to intercept and manage events ([`Main`](Main.java) it is the entrypoint of the application).
 
  The goal of this task is to define the methods of the `Logics` interface
  and implement it with a `LogicsImpl` class so that the game works.

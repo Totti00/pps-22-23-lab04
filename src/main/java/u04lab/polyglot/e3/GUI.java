@@ -1,6 +1,6 @@
-package e2;
+package u04lab.polyglot.e3;
 
-import e2.Model.Cell;
+import u04lab.polyglot.e3.Model.Cell;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
@@ -17,13 +17,14 @@ public class GUI extends JFrame {
     @Serial
     private static final long serialVersionUID = -6218820567019985015L;
     private final Map<JButton,Pair<Integer,Integer>> buttons = new HashMap<>();
-    private final Logics logics;
+    private final LogicsImpl2 logics;
+    private final int size;
     
     public GUI(int size, int numberOfMines) {
-        this.logics = new LogicsImpl(size);
+        this.size = size;
+        this.logics = new LogicsImpl2(size, numberOfMines);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(100*size, 100*size);
-        this.logics.placeMines(numberOfMines);
         
         JPanel panel = new JPanel(new GridLayout(size,size));
         this.getContentPane().add(BorderLayout.CENTER,panel);
@@ -31,7 +32,7 @@ public class GUI extends JFrame {
         ActionListener onClick = (e)->{
             final JButton bt = (JButton)e.getSource();
             final Pair<Integer,Integer> pos = buttons.get(bt);
-            boolean aMineWasFound = this.logics.hit(pos); // call the logic here to tell it that cell at 'pos' has been seleced
+            boolean aMineWasFound = this.logics.hit(pos.getX(), pos.getY()); // call the logic here to tell it that cell at 'pos' has been seleced
             if (aMineWasFound) {
                 quitGame();
                 JOptionPane.showMessageDialog(this, "You lost!!");
@@ -39,7 +40,7 @@ public class GUI extends JFrame {
                 this.buttons.entrySet().stream().filter(entry -> entry.getValue().equals(pos)).forEach(entry -> entry.getKey().setEnabled(false));
                 drawBoard();
             }
-            boolean isThereVictory = this.logics.checkWin(); // call the logic here to ask if there is victory
+            boolean isThereVictory = this.logics.won(); // call the logic here to ask if there is victory
             if (isThereVictory){
                 quitGame();
                 JOptionPane.showMessageDialog(this, "You won!!");
@@ -53,10 +54,10 @@ public class GUI extends JFrame {
                 final JButton bt = (JButton)e.getSource();
                 if (bt.isEnabled()){
                     final Pair<Integer,Integer> pos = buttons.get(bt);
-                    if (logics.hasFlag(pos)) {
-                        logics.removeFlag(pos);
+                    if (logics.hasFlag(pos.getX(), pos.getY())) {
+                        logics.removeFlag(pos.getX(), pos.getY());
                     } else {
-                        logics.placeFlag(pos);
+                        logics.placeFlag(pos.getX(), pos.getY());
                     }
                 }
                 drawBoard(); 
@@ -77,30 +78,52 @@ public class GUI extends JFrame {
     }
     
     private void quitGame() {
+        this.logics.setVisibleMines();
         this.drawBoard();
     	for (var entry: this.buttons.entrySet()) {
             entry.getKey().setEnabled(false);
-            this.logics.getCellsWithMines().stream().filter(cell -> cell.getPosition().equals(entry.getValue())).forEach(cell -> entry.getKey().setText("*"));
-    	}
+            Pair<Integer, Integer> pos = entry.getValue();
+            if (this.logics.hasMine(pos.getX(), pos.getY()))
+                entry.getKey().setText("*");
+            }
     }
 
     private void drawBoard() {
         this.buttons.forEach((bt, pos) -> {
-            if (this.logics.hasFlag(pos) && bt.isEnabled()) {
+            if (this.logics.hasFlag(pos.getX(), pos.getY()) && bt.isEnabled()) {
                 bt.setText("F");
-            } else if (!this.logics.hasFlag(pos) && bt.isEnabled()) {
+            } else if (!this.logics.hasFlag(pos.getX(), pos.getY()) && bt.isEnabled()) {
                 bt.setText(" ");
             } else if (!bt.isEnabled() && bt.getText().equals(" ")) {
-                final int numberOfAdjacentMines = this.logics.getAdjacentCells(pos).stream().filter(Cell::hasMine).toArray().length;
+                int numberOfAdjacentMines = 0;
+                for (int i=0; i<3; i++) {
+                    for (int j=0; j<3; j++) {
+                        if (i==1 && j==1) continue;
+                            int x = pos.getX() + i - 1;
+                            int y = pos.getY() + j - 1;
+                        if (this.logics.isAdjacentCellAMine(x, y)) {
+                            numberOfAdjacentMines = numberOfAdjacentMines + 1;
+                        }
+                    }
+                }
                 bt.setText(String.valueOf(numberOfAdjacentMines));
                 if (numberOfAdjacentMines == 0) {
-                    this.logics.getAdjacentCells(pos).forEach(cell -> {
-                        this.logics.hit(cell.getPosition());
-                        this.buttons.entrySet().stream().filter(entry2 -> entry2.getValue().equals(cell.getPosition())).forEach(entry2 -> entry2.getKey().setEnabled(false));
-                    });
+                    for (int i=0; i<3; i++) {
+                        for (int j=0; j<3; j++) {
+                            int x = pos.getX() + i - 1;
+                            int y = pos.getY() + j - 1;
+                            if (x >= 0 && x < this.size  && y >= 0 && y < this.size) {
+                                this.logics.hit(x, y);
+                                this.buttons.entrySet().stream().filter(entry2 -> entry2.getValue().equals(new Pair<>(x, y))).forEach(entry2 -> entry2.getKey().setEnabled(false));
+                            }
+                        }
+                    }
                     drawBoard();
                 }
             }
         });
     }
 }
+
+
+

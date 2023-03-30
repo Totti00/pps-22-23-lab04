@@ -1,6 +1,6 @@
-package e2.Model;
+package u04lab.polyglot.e3.Model;
 
-import e2.Pair;
+import u04lab.polyglot.e3.Pair;
 
 import java.util.HashSet;
 import java.util.Set;

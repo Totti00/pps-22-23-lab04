@@ -2,6 +2,7 @@ package u04lab.code.exercises
 
 import u04lab.code.Option.*
 import u04lab.code.*
+import scala.util.*
 
 import scala.annotation.tailrec
 // A generic linkedlist
@@ -71,4 +72,5 @@ object List:
     case _ => Nil()
 
   def take[A](list: List[A], n: Int): List[A] = reverse(drop(reverse(list), length(list) - n))
+
 end List
