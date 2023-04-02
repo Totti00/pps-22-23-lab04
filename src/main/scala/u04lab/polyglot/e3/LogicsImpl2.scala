@@ -51,12 +51,8 @@ object Grid:
     @tailrec
     private def setRandomMines(pos: List[Pair[Int, Int]])(mines: Int): List[Pair[Int, Int]] = mines match
       case 0 => pos
-      case _ =>
-        if contains(pos, generateRandomPos)
-        then
-          setRandomMines(pos)(mines)
-        else
-          setRandomMines(append(pos, cons(generateRandomPos, List.empty)))(mines - 1)
+      case _ => if contains(pos, generateRandomPos) then setRandomMines(pos)(mines)
+          else setRandomMines(append(pos, cons(generateRandomPos, List.empty)))(mines - 1)
 
   def apply(size: Int, mines: Int): Grid = GridImpl(size, mines)
 
